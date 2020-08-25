@@ -3,7 +3,7 @@ import { useParams, useLocation, useHistory, useRouteMatch } from 'react-router-
 import queryString from 'query-string';
 
 // Usage
-function MyComponent() {
+export function MyComponent() {
   // Get the router object
   const router = useRouter();
 

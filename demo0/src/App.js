@@ -5,7 +5,7 @@ import PasswordManage from './components/PasswordManage'
 import 'antd/dist/antd.css';
 
 export const Context = createContext(null);
-const initialValues = datasource;
+const initialValues = { passwordList: datasource, xxxList: { name: 1 } };
 const App = () => {
   const [state, dispatch] = useReducer(Reducer, initialValues);
   return (

@@ -4,6 +4,7 @@ import { Table, Row, Col, Button, Modal, Typography, Input, Form } from 'antd';
 import { ADD_PASSWORD, SAVE_PASSWORD, DELETE_PASSWORD } from '../actions/action';
 import uuid from 'uuid';
 import FileSaver from 'file-saver';
+import { Decrypto, Encrypto } from '../utils/crypto-op';
 const { Link, Paragraph } = Typography;
 
 const PasswordManage = () => {
@@ -38,7 +39,7 @@ const PasswordManage = () => {
       title: 'Password',
       width: 200,
       align: 'center',
-      render: pwd => <Paragraph copyable={{ tooltips: false }}>{pwd}</Paragraph>
+      render: pwd => <Paragraph copyable={{ tooltips: false, text: Decrypto(pwd) }}>{pwd}</Paragraph>
     },
     {
       title: 'Operation',
@@ -53,19 +54,22 @@ const PasswordManage = () => {
   ];
 
   const addPassword = () => {
-    let data = formRef.current.getFieldsValue();
-    if (data.key) {
-      dispatch({ type: SAVE_PASSWORD, password: data })
-    } else {
-      data.key = uuid();
-      dispatch({ type: ADD_PASSWORD, password: data });
-    }
-    form.setFieldsValue(initialValues);
-    setVisible(false);
+    form.validateFields().then(() => {
+      let data = formRef.current.getFieldsValue();
+      if (data.key) {
+        dispatch({ type: SAVE_PASSWORD, password: data })
+      } else {
+        data.key = uuid();
+        data.pwd = Encrypto(data.pwd);
+        dispatch({ type: ADD_PASSWORD, password: data });
+      }
+      form.setFieldsValue(initialValues);
+      setVisible(false);
+    }).catch(err => err);
   }
 
   const generateFile = () => {
-    FileSaver.saveAs(new Blob([JSON.stringify(state.passwordList)]), 'data-source1.json', 'D://data-source1.json');
+    FileSaver.saveAs(new Blob([JSON.stringify(state.passwordList)]), 'data-source.json');
   }
 
   const editPassword = row => {
@@ -100,19 +104,19 @@ const PasswordManage = () => {
       onCancel={() => setVisible(false)}
       title={opType + " Password"}
       onOk={addPassword}
-      width="360px"
+      width="400px"
     >
       <Form {...FormLayout} form={form} ref={formRef}>
         <Form.Item name="key" hidden>
           <Input />
         </Form.Item>
-        <Form.Item name="webName" label="Web Name">
+        <Form.Item name="webName" label="Web Name" rules={[{ required: true, message: `Please input this password's Web Name` }]}>
           <Input />
         </Form.Item>
-        <Form.Item name="name" label="Account">
+        <Form.Item name="name" label="Account" rules={[{ required: true, message: `Please input this password's Account` }]}>
           <Input />
         </Form.Item>
-        <Form.Item name="pwd" label="Password">
+        <Form.Item name="pwd" label="Password" rules={[{ required: true, message: `Please input this password's Password` }]}>
           <Input />
         </Form.Item>
       </Form>

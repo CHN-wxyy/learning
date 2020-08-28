@@ -5,9 +5,10 @@ import PasswordManage from './components/PasswordManage'
 import 'antd/dist/antd.css';
 
 export const Context = createContext(null);
-const initialValues = { passwordList: datasource, xxxList: { name: 1 } };
 const App = () => {
+  const initialValues = { passwordList: datasource, nameList: 'xx' };
   const [state, dispatch] = useReducer(Reducer, initialValues);
+
   return (
     <Context.Provider value={{ state, dispatch }}>
       <PasswordManage />

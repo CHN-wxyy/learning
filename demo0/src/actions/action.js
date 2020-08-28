@@ -3,6 +3,7 @@ export const RECEIVE_GOODSLIST = 'RECEIVE_GOODSlIST';
 export const ADD_PASSWORD = 'ADD_PASSWORD';
 export const SAVE_PASSWORD = 'SAVE_PASSWORD';
 export const DELETE_PASSWORD = 'DELETE_PASSWORD';
+export const QUERY_PASSWORDLIST = 'QUERY_PASSWORDLIST';
 
 export const requestGoodsList = () => ({ type: REQUEST_GOODSLIST });
 
@@ -23,5 +24,7 @@ export const savePassword = password => ({
 });
 
 export const deletePassword = key => ({ type: DELETE_PASSWORD, key: key });
+
+export const queryPasswordList = passwordList => ({ type: QUERY_PASSWORDLIST, passwordList: passwordList })
 
 

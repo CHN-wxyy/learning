@@ -1,10 +1,11 @@
-import React, { useContext, useRef, useState } from 'react';
+import React, { useContext, useRef, useState, useEffect, useCallback } from 'react';
 import { Context } from '../App';
 import { Table, Row, Col, Button, Modal, Typography, Input, Form } from 'antd';
-import { ADD_PASSWORD, SAVE_PASSWORD, DELETE_PASSWORD } from '../actions/action';
+import { ADD_PASSWORD, SAVE_PASSWORD, DELETE_PASSWORD, QUERY_PASSWORDLIST } from '../actions/action';
 import uuid from 'uuid';
 import FileSaver from 'file-saver';
 import { Decrypto, Encrypto } from '../utils/crypto-op';
+import { getDatasource } from '../api/password';
 const { Link, Paragraph } = Typography;
 
 const PasswordManage = () => {
@@ -53,6 +54,17 @@ const PasswordManage = () => {
     }
   ];
 
+  const queryPasswordList = useCallback(passwordList => {
+    dispatch({ type: QUERY_PASSWORDLIST, passwordList: passwordList })
+  }, [dispatch])
+
+  const getPasswordList = useCallback(() => {
+    getDatasource().then(res => {
+      console.log(res);
+      queryPasswordList(res.data);
+    })
+  }, [queryPasswordList])
+
   const addPassword = () => {
     form.validateFields().then(() => {
       let data = formRef.current.getFieldsValue();
@@ -81,6 +93,10 @@ const PasswordManage = () => {
   const deletePassword = key => {
     dispatch({ type: DELETE_PASSWORD, key: key });
   }
+
+  useEffect(() => {
+    getPasswordList();
+  }, [getPasswordList])
 
   return (<div>
     <Row style={{ marginBottom: '20px' }}>

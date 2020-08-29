@@ -12,6 +12,7 @@ const PasswordManage = () => {
 
   const initialValues = { key: '', webName: '', name: '', pwd: '' };
   const [visible, setVisible] = useState(false);
+  const [loading, setLoading] = useState(false);
   const [opType, setOpType] = useState();
   const { state, dispatch } = useContext(Context);
   const [form] = Form.useForm();
@@ -59,9 +60,10 @@ const PasswordManage = () => {
   }, [dispatch])
 
   const getPasswordList = useCallback(() => {
+    setLoading(true);
     getDatasource().then(res => {
-      console.log(res);
       queryPasswordList(res.data);
+      setLoading(false);
     })
   }, [queryPasswordList])
 
@@ -111,6 +113,7 @@ const PasswordManage = () => {
           columns={columns}
           dataSource={state.passwordList}
           pagination={false}
+          loading={loading}
           bordered
         />
       </Col>

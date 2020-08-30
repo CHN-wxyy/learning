@@ -6,6 +6,7 @@ import uuid from 'uuid';
 import FileSaver from 'file-saver';
 import { Decrypto, Encrypto } from '../utils/crypto-op';
 import { getDatasource } from '../api/password';
+// import datasource from '../test/data-source.json';
 const { Link, Paragraph } = Typography;
 
 const PasswordManage = () => {
@@ -112,6 +113,7 @@ const PasswordManage = () => {
         <Table
           columns={columns}
           dataSource={state.passwordList}
+          // dataSource={datasource}
           pagination={false}
           loading={loading}
           bordered

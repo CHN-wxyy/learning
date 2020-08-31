@@ -1,13 +1,14 @@
 import React, { useContext, useRef, useState, useEffect, useCallback } from 'react';
 import { Context } from '../App';
 import { Table, Row, Col, Button, Modal, Typography, Input, Form } from 'antd';
-import { ADD_PASSWORD, SAVE_PASSWORD, DELETE_PASSWORD, QUERY_PASSWORDLIST } from '../actions/action';
+import { queryPasswordListAction, savePasswordAction, addPasswordAction, deletePasswordAction } from '../actions/action';
 import uuid from 'uuid';
 import FileSaver from 'file-saver';
 import { Decrypto, Encrypto } from '../utils/crypto-op';
 import { getDatasource } from '../api/password';
 // import datasource from '../test/data-source.json';
 const { Link, Paragraph } = Typography;
+const { Search } = Input;
 
 const PasswordManage = () => {
 
@@ -57,12 +58,13 @@ const PasswordManage = () => {
   ];
 
   const queryPasswordList = useCallback(passwordList => {
-    dispatch({ type: QUERY_PASSWORDLIST, passwordList: passwordList })
+    // dispatch({ type: QUERY_PASSWORDLIST, passwordList: passwordList })
+    dispatch(queryPasswordListAction(passwordList));
   }, [dispatch])
 
-  const getPasswordList = useCallback(() => {
+  const getPasswordList = useCallback((webName = '') => {
     setLoading(true);
-    getDatasource().then(res => {
+    getDatasource(webName).then(res => {
       queryPasswordList(res.data);
       setLoading(false);
     })
@@ -72,11 +74,13 @@ const PasswordManage = () => {
     form.validateFields().then(() => {
       let data = formRef.current.getFieldsValue();
       if (data.key) {
-        dispatch({ type: SAVE_PASSWORD, password: data })
+        // dispatch({ type: SAVE_PASSWORD, password: data })
+        dispatch(savePasswordAction(data));
       } else {
         data.key = uuid();
         data.pwd = Encrypto(data.pwd);
-        dispatch({ type: ADD_PASSWORD, password: data });
+        // dispatch({ type: ADD_PASSWORD, password: data });
+        dispatch(addPasswordAction(data));
       }
       form.setFieldsValue(initialValues);
       setVisible(false);
@@ -91,21 +95,33 @@ const PasswordManage = () => {
     form.setFieldsValue(row);
     setOpType('Edit');
     setVisible(true);
+    console.log(state);
   }
 
   const deletePassword = key => {
-    dispatch({ type: DELETE_PASSWORD, key: key });
+    // dispatch({ type: DELETE_PASSWORD, key: key });
+    dispatch(deletePasswordAction(key));
   }
 
   useEffect(() => {
     getPasswordList();
+    // queryPasswordList(datasource);
   }, [getPasswordList])
 
   return (<div>
     <Row style={{ marginBottom: '20px' }}>
-      <Col offset={4}>
-        <Button type="primary" onClick={() => { setVisible(true); setOpType('Add') }}>Add Password</Button>
-        <Button style={{ marginLeft: '20px' }} type="primary" onClick={() => generateFile()}>Generate File</Button>
+      <Col offset={4} span={16} style={{ marginBottom: 0, height: 60, display: 'flex', alignItems: 'center' }}>
+        <div style={{ width: '50%' }}>
+          <Button type="primary" onClick={() => { setVisible(true); setOpType('Add') }}>Add Password</Button>
+          <Button style={{ marginLeft: '20px' }} type="primary" onClick={() => generateFile()}>Generate File</Button>
+        </div>
+        <div style={{ width: '50%' }}>
+          <Search
+            placeholder="Input Web Name"
+            enterButton="Search"
+            onSearch={webName => getPasswordList(webName)}
+          />
+        </div>
       </Col>
     </Row>
     <Row>

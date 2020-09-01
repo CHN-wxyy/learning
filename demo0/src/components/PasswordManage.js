@@ -6,7 +6,7 @@ import uuid from 'uuid';
 import FileSaver from 'file-saver';
 import { Decrypto, Encrypto } from '../utils/crypto-op';
 import { getDatasource } from '../api/password';
-// import datasource from '../test/data-source.json';
+import styles from '../scss/App.module.scss';
 const { Link, Paragraph } = Typography;
 const { Search } = Input;
 
@@ -29,36 +29,38 @@ const PasswordManage = () => {
       dataIndex: 'webName',
       title: 'Web Name',
       width: 200,
-      align: 'center'
+      align: 'center',
+      className: styles['webName']
     },
     {
       dataIndex: 'name',
       title: 'Account',
       width: 200,
       align: 'center',
+      className: styles['name'],
       render: account => <Paragraph copyable={{ tooltips: false }}>{account}</Paragraph>
     },
     {
       dataIndex: 'pwd',
       title: 'Password',
-      width: 200,
       align: 'center',
+      className: styles['pwd'],
       render: pwd => <Paragraph copyable={{ tooltips: false, text: Decrypto(pwd) }}>{pwd}</Paragraph>
     },
     {
       title: 'Operation',
       width: 100,
       align: 'center',
+      className: styles['operation'],
       render: row => <div>
         <Link onClick={() => editPassword(row)}>Edit</Link>
-        <span style={{ margin: '0px 5px' }}>|</span>
+        <span className={styles['delimiter']}>|</span>
         <Link onClick={() => deletePassword(row.key)}>Delete</Link>
       </div>
     }
   ];
 
   const queryPasswordList = useCallback(passwordList => {
-    // dispatch({ type: QUERY_PASSWORDLIST, passwordList: passwordList })
     dispatch(queryPasswordListAction(passwordList));
   }, [dispatch])
 
@@ -74,12 +76,11 @@ const PasswordManage = () => {
     form.validateFields().then(() => {
       let data = formRef.current.getFieldsValue();
       if (data.key) {
-        // dispatch({ type: SAVE_PASSWORD, password: data })
+        data.pwd = Encrypto(data.pwd);
         dispatch(savePasswordAction(data));
       } else {
         data.key = uuid();
         data.pwd = Encrypto(data.pwd);
-        // dispatch({ type: ADD_PASSWORD, password: data });
         dispatch(addPasswordAction(data));
       }
       form.setFieldsValue(initialValues);
@@ -99,37 +100,32 @@ const PasswordManage = () => {
   }
 
   const deletePassword = key => {
-    // dispatch({ type: DELETE_PASSWORD, key: key });
     dispatch(deletePasswordAction(key));
   }
 
   useEffect(() => {
     getPasswordList();
-    // queryPasswordList(datasource);
   }, [getPasswordList])
 
   return (<div>
-    <Row style={{ marginBottom: '20px' }}>
-      <Col offset={4} span={16} style={{ marginBottom: 0, height: 60, display: 'flex', alignItems: 'center' }}>
-        <div style={{ width: '50%' }}>
+    <Row>
+      <div className={styles['features_area']}>
+        <Col span={4}></Col>
+        <div className={styles['features_left']}>
           <Button type="primary" onClick={() => { setVisible(true); setOpType('Add') }}>Add Password</Button>
-          <Button style={{ marginLeft: '20px' }} type="primary" onClick={() => generateFile()}>Generate File</Button>
+          <Button className={styles['generate_file_btn']} type="primary" onClick={() => generateFile()}>Generate File</Button>
         </div>
-        <div style={{ width: '50%' }}>
-          <Search
-            placeholder="Input Web Name"
-            enterButton="Search"
-            onSearch={webName => getPasswordList(webName)}
-          />
+        <div className={styles['features_right']}>
+          <Search className={styles['search_btn']} placeholder="Input Web Name" enterButton="Search" onSearch={webName => getPasswordList(webName)} />
         </div>
-      </Col>
+        <Col lg={0} xl={4}></Col>
+      </div>
     </Row>
     <Row>
       <Col offset={4} span={16}>
         <Table
           columns={columns}
           dataSource={state.passwordList}
-          // dataSource={datasource}
           pagination={false}
           loading={loading}
           bordered

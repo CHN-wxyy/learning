@@ -1,6 +1,6 @@
 import React, { useContext, useRef, useState, useEffect, useCallback } from 'react';
 import { Context } from '../App';
-import { Table, Row, Col, Button, Modal, Typography, Input, Form } from 'antd';
+import { Table, Button, Modal, Typography, Input, Form } from 'antd';
 import { queryPasswordListAction, savePasswordAction, addPasswordAction, deletePasswordAction } from '../actions/action';
 import uuid from 'uuid';
 import FileSaver from 'file-saver';
@@ -96,7 +96,6 @@ const PasswordManage = () => {
     form.setFieldsValue(row);
     setOpType('Edit');
     setVisible(true);
-    console.log(state);
   }
 
   const deletePassword = key => {
@@ -108,30 +107,22 @@ const PasswordManage = () => {
   }, [getPasswordList])
 
   return (<div>
-    <Row>
-      <div className={styles['features_area']}>
-        <Col span={4}></Col>
-        <div className={styles['features_left']}>
-          <Button type="primary" onClick={() => { setVisible(true); setOpType('Add') }}>Add Password</Button>
-          <Button className={styles['generate_file_btn']} type="primary" onClick={() => generateFile()}>Generate File</Button>
-        </div>
-        <div className={styles['features_right']}>
-          <Search className={styles['search_btn']} placeholder="Input Web Name" enterButton="Search" onSearch={webName => getPasswordList(webName)} />
-        </div>
-        <Col lg={0} xl={4}></Col>
+    <div className={styles['features_area']}>
+      <div className={styles['features_left']}>
+        <Button type="primary" onClick={() => { setVisible(true); setOpType('Add') }}>Add Password</Button>
+        <Button className={styles['generate_file_btn']} type="primary" onClick={() => generateFile()}>Generate File</Button>
       </div>
-    </Row>
-    <Row>
-      <Col offset={4} span={16}>
-        <Table
-          columns={columns}
-          dataSource={state.passwordList}
-          pagination={false}
-          loading={loading}
-          bordered
-        />
-      </Col>
-    </Row>
+      <div className={styles['features_right']}>
+        <Search className={styles['search_btn']} placeholder="Input Web Name" enterButton="Search" onSearch={webName => getPasswordList(webName)} />
+      </div>
+    </div>
+    <Table
+      columns={columns}
+      dataSource={state.passwordList}
+      pagination={false}
+      loading={loading}
+      bordered
+    />
     <Modal
       visible={visible}
       onCancel={() => setVisible(false)}
